@@ -9,7 +9,7 @@
 
     :root {
       --red: #DD1D21;
-      --yellow: #FBCE07;
+      --yellow: #DD1D21;
       --dark: #1a1a1a;
       --gray: #555;
       --light-gray: #f5f5f5;
@@ -75,7 +75,7 @@
       content: '';
       width: 22px;
       height: 22px;
-      background: var(--yellow);
+      background: #fff;
       border-radius: 50%;
       position: absolute;
       bottom: 6px;
@@ -101,7 +101,7 @@
     .nav-links a:hover, .nav-links a.active { background: var(--red); color: var(--white); }
     .nav-cta {
       background: var(--yellow);
-      color: var(--dark) !important;
+      color: var(--white) !important;
       border-radius: 4px;
       padding: 9px 18px !important;
       font-weight: 700 !important;
@@ -167,7 +167,7 @@
     .hero-badge {
       display: inline-block;
       background: var(--yellow);
-      color: var(--dark);
+      color: var(--white);
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 2px;
@@ -214,7 +214,7 @@
       transition: border-color .2s, background .2s;
       cursor: pointer;
     }
-    .btn-outline:hover { border-color: var(--yellow); background: rgba(251,206,7,.08); }
+    .btn-outline:hover { border-color: var(--yellow); background: rgba(221,29,33,.15); }
     .hero-stats {
       display: flex;
       gap: 40px;
@@ -243,9 +243,9 @@
       gap: 8px;
       font-size: 14px;
       font-weight: 700;
-      color: var(--dark);
+      color: var(--white);
     }
-    .brand-strip-item .dot { width: 8px; height: 8px; background: var(--red); border-radius: 50%; }
+    .brand-strip-item .dot { width: 8px; height: 8px; background: var(--white); border-radius: 50%; }
 
     /* ── SECTION COMMONS ── */
     section { padding: 80px 0; }
@@ -303,10 +303,10 @@
       box-shadow: 0 8px 24px rgba(0,0,0,.15);
       font-weight: 800;
       font-size: 13px;
-      color: var(--dark);
+      color: var(--white);
       z-index: 2;
     }
-    .about-badge-float span { display: block; font-size: 28px; font-weight: 900; color: var(--red); }
+    .about-badge-float span { display: block; font-size: 28px; font-weight: 900; color: var(--white); }
     .big-icon {
       font-size: 120px;
       opacity: .25;
@@ -372,7 +372,7 @@
       overflow: hidden;
     }
     .product-img.red-bg { background: linear-gradient(135deg, #DD1D21 0%, #8B0000 100%); }
-    .product-img.yellow-bg { background: linear-gradient(135deg, #FBCE07 0%, #e0a800 100%); }
+    .product-img.yellow-bg { background: linear-gradient(135deg, #FF4444 0%, #b51719 100%); }
     .product-img.dark-bg { background: linear-gradient(135deg, #2d2d2d 0%, #111 100%); }
     .product-img.blue-bg { background: linear-gradient(135deg, #1565C0 0%, #003c8f 100%); }
     .product-label {
@@ -574,8 +574,8 @@
     .estore-text h2 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
     .estore-text p { font-size: 16px; opacity: .85; }
     .btn-estore {
-      background: var(--yellow);
-      color: var(--dark);
+      background: var(--white);
+      color: var(--red);
       padding: 16px 36px;
       border-radius: 4px;
       font-size: 15px;
@@ -583,7 +583,7 @@
       transition: background .2s, transform .2s;
       white-space: nowrap;
     }
-    .btn-estore:hover { background: #ffe033; transform: translateY(-2px); }
+    .btn-estore:hover { background: #f0f0f0; transform: translateY(-2px); }
 
     /* ── PARTNERS ── */
     .partners { background: var(--white); padding: 60px 0; }
