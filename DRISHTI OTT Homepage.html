@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DRISHTI — OTT Homepage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  DRISHTI — DESIGN TOKENS  (dark, cinematic OTT system)        ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║  COLOR                                                        ║
+  ║   --bg        #0b0b0d   app canvas (warm near-black)          ║
+  ║   --surface   #16161a   cards / inputs / menus                ║
+  ║   --surface-2 #1f1f25   raised surface                        ║
+  ║   --line      rgba(255,255,255,0.08)  hairline borders        ║
+  ║   --text      #f5f4f2   primary (warm white)                  ║
+  ║   --text-2    62% white secondary                            ║
+  ║   --text-3    42% white tertiary / captions                  ║
+  ║   --accent    #ff3d57   primary action (Watch / active)       ║
+  ║   --gold      #e8b25a   premium / original tags               ║
+  ║   --live      #ff2d46   LIVE broadcast badge                  ║
+  ║  TYPE                                                          ║
+  ║   --font-display  Bricolage Grotesque (titles, headings)      ║
+  ║   --font-ui       Plus Jakarta Sans (labels, body, meta)      ║
+  ║   scale: 44/32/30 display · 19/17 section · 15/13/12 ui       ║
+  ║  SPACING  8pt system → 4 8 12 16 20 28 (gutters = 20)         ║
+  ║  RADIUS   sheet 24 · card 14–16 · chip 13 · pill 99           ║
+  ║  ELEVATION  card 0 8 22 rgba(0,0,0,.4) · sheet 0 -20 50 .5    ║
+  ╚══════════════════════════════════════════════════════════════╝
+-->
+<style>
+  :root {
+    --bg: #0b0b0d;
+    --surface: #16161a;
+    --surface-2: #1f1f25;
+    --line: rgba(255,255,255,0.08);
+    --text: #f5f4f2;
+    --text-2: rgba(245,244,242,0.62);
+    --text-3: rgba(245,244,242,0.42);
+    --accent: #ff3d57;
+    --gold: #e8b25a;
+    --live: #ff2d46;
+    --font-ui: "Plus Jakarta Sans", system-ui, sans-serif;
+    --font-display: "Bricolage Grotesque", var(--font-ui);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    background: #c9c9cf;
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #d6d6dc, transparent 60%),
+      linear-gradient(180deg, #cfcfd5, #b9b9c0);
+    font-family: var(--font-ui);
+    padding: 28px 0;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  #root { display: flex; align-items: center; justify-content: center; }
+
+  /* hide scrollbars inside the app */
+  .app-scroll::-webkit-scrollbar, .rail::-webkit-scrollbar { width: 0; height: 0; display: none; }
+  .app-scroll, .rail { scrollbar-width: none; -ms-overflow-style: none; }
+
+  /* press feedback */
+  .press { transition: transform 0.12s ease, opacity 0.12s ease; -webkit-tap-highlight-color: transparent; }
+  .press:active { transform: scale(0.95); opacity: 0.9; }
+  .icon-btn { background: none; border: none; padding: 0; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+  .ghost-btn:active { opacity: 0.6; }
+  button { font-family: inherit; }
+  input::placeholder { color: var(--text-3); }
+
+  /* live dot pulse */
+  @keyframes livePulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(0.7); } }
+  .live-dot { animation: livePulse 1.4s ease-in-out infinite; }
+
+  @media (prefers-reduced-motion: reduce) { .live-dot { animation: none; } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="data.jsx"></script>
+<script type="text/babel" src="ui-core.jsx"></script>
+<script type="text/babel" src="ui-cards.jsx"></script>
+<script type="text/babel" src="nav.jsx"></script>
+<script type="text/babel" src="screens.jsx"></script>
+<script type="text/babel" src="app.jsx"></script>
+
+<script type="text/babel" data-presets="react">
+  function Root() {
+    return (
+      <window.IOSDevice dark>
+        <window.DrishtiApp />
+      </window.IOSDevice>
+    );
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(<Root />);
+</script>
+</body>
+</html>
