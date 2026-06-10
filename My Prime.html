@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Prime — Prime Bank Digital Banking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #1e6fff;
+    --blue-dark: #1558d6;
+    --blue-light: #e8f0ff;
+    --blue-dim: rgba(30,111,255,0.12);
+    --text: #0d0d14;
+    --text-2: #4b5563;
+    --text-3: #9ca3af;
+    --border: #e5e7eb;
+    --bg: #ffffff;
+    --surface: #f9fafb;
+    --green: #16a34a;
+    --radius: 14px;
+    --radius-lg: 20px;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #e8ecf2;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Phone shell */
+  .phone {
+    width: 390px;
+    height: 812px;
+    background: var(--bg);
+    border-radius: 44px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.28), 0 0 0 1px rgba(0,0,0,0.08);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Status bar */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 24px 0;
+    flex-shrink: 0;
+    height: 50px;
+  }
+  .status-time { font-size: 15px; font-weight: 600; color: var(--text); }
+  .status-icons { display: flex; align-items: center; gap: 6px; }
+  .signal-bars { display: flex; align-items: flex-end; gap: 2px; }
+  .signal-bars span { width: 3px; border-radius: 1px; background: var(--text); }
+  .signal-bars span:nth-child(1) { height: 4px; }
+  .signal-bars span:nth-child(2) { height: 6px; }
+  .signal-bars span:nth-child(3) { height: 8px; }
+  .signal-bars span:nth-child(4) { height: 11px; }
+  .battery {
+    width: 24px; height: 12px; border: 1.5px solid var(--text); border-radius: 3px;
+    position: relative; display: flex; align-items: center; padding: 1.5px;
+  }
+  .battery::after {
+    content: ''; position: absolute; right: -4px; top: 50%; transform: translateY(-50%);
+    width: 2px; height: 6px; background: var(--text); border-radius: 0 1px 1px 0;
+  }
+  .battery-fill { height: 100%; width: 80%; background: var(--text); border-radius: 1px; }
+
+  /* Screen container */
+  .screen {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    position: relative;
+    display: none;
+    flex-direction: column;
+  }
+  .screen::-webkit-scrollbar { display: none; }
+  .screen.active { display: flex; }
+
+  /* Top bar with back */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    height: 56px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .back-btn {
+    width: 44px; height: 44px; border-radius: 99px;
+    border: 1px solid var(--border); background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
+    font-size: 18px; color: var(--text); font-weight: 600;
+    transition: background 0.15s;
+  }
+  .back-btn:hover { background: var(--border); }
+  .top-bar-title {
+    flex: 1; text-align: center; font-size: 17px; font-weight: 600; color: var(--text);
+    margin-right: 44px;
+  }
+
+  /* Common content padding */
+  .content { padding: 0 20px; flex: 1; display: flex; flex-direction: column; }
+
+  /* Logo */
+  .logo-mark {
+    width: 80px; height: 80px; border-radius: 22px;
+    background: linear-gradient(145deg, #1e6fff, #0040d0);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto;
+  }
+  .logo-mark span {
+    font-size: 28px; font-weight: 800; letter-spacing: -1px;
+  }
+  .logo-mark .m { color: #fff; }
+  .logo-mark .p { color: #fbbf24; }
+
+  /* Button */
+  .btn-primary {
+    width: 100%; height: 50px; border-radius: 14px;
+    background: var(--blue); border: none; cursor: pointer;
+    color: #fff; font-family: inherit; font-size: 16px; font-weight: 700;
+    transition: background 0.15s, transform 0.1s;
+    flex-shrink: 0;
+  }
+  .btn-primary:hover { background: var(--blue-dark); }
+  .btn-primary:active { transform: scale(0.98); }
+
+  .btn-ghost {
+    width: 100%; height: 50px; background: none; border: none; cursor: pointer;
+    color: var(--blue); font-family: inherit; font-size: 15px; font-weight: 600;
+    transition: opacity 0.15s;
+  }
+  .btn-ghost:hover { opacity: 0.75; }
+
+  /* Input */
+  .input-label { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+  .input-field {
+    width: 100%; height: 50px; border-radius: 12px;
+    border: 1.5px solid var(--border); background: var(--bg);
+    padding: 0 14px; font-family: inherit; font-size: 16px; color: var(--text);
+    outline: none; transition: border-color 0.15s;
+  }
+  .input-field:focus { border-color: var(--blue); }
+
+  /* Option card (method selection) */
+  .option-card {
+    border-radius: 14px; border: 2px solid var(--border);
+    padding: 18px 16px; display: flex; align-items: center; gap: 14px;
+    cursor: pointer; transition: border-color 0.15s, background 0.15s;
+    background: var(--bg);
+  }
+  .option-card.selected { border-color: var(--blue); background: var(--blue-light); }
+  .option-icon {
+    width: 48px; height: 48px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 800; flex-shrink: 0;
+  }
+  .option-icon.blue { background: var(--blue); color: #fff; }
+  .option-icon.gray { background: var(--surface); color: var(--text-2); }
+  .option-text { flex: 1; }
+  .option-title { font-size: 16px; font-weight: 700; color: var(--text); }
+  .option-desc { font-size: 13px; color: var(--text-2); margin-top: 3px; line-height: 1.4; }
+  .radio-dot {
+    width: 22px; height: 22px; border-radius: 99px;
+    border: 2px solid var(--border); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.15s;
+  }
+  .radio-dot.checked { border-color: var(--blue); }
+  .radio-dot.checked::after {
+    content: ''; width: 10px; height: 10px; border-radius: 99px; background: var(--blue);
+  }
+
+  /* OTP boxes */
+  .otp-grid { display: flex; gap: 10px; justify-content: center; }
+  .otp-box {
+    width: 48px; height: 58px; border-radius: 12px;
+    border: 1.5px solid var(--border); background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 700; color: var(--text);
+    transition: border-color 0.15s;
+  }
+  .otp-box.filled { border-color: var(--blue); }
+
+  /* Credential display */
+  .cred-card {
+    border-radius: 14px; border: 1px solid var(--border);
+    padding: 18px 16px 16px; background: var(--surface);
+  }
+  .cred-label { font-size: 11px; font-weight: 700; color: var(--text-3); letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 6px; }
+  .cred-value { font-size: 24px; font-weight: 800; color: var(--text); }
+  .copy-btn {
+    border: 1px solid var(--border); background: var(--bg); border-radius: 8px;
+    padding: 4px 12px; font-family: inherit; font-size: 13px; font-weight: 600;
+    color: var(--blue); cursor: pointer; transition: background 0.15s;
+  }
+  .copy-btn:hover { background: var(--blue-light); }
+  .copy-btn.copied { color: var(--green); border-color: var(--green); }
+
+  /* Password strength */
+  .strength-bars { display: flex; gap: 6px; margin-top: 8px; }
+  .strength-bar { flex: 1; height: 4px; border-radius: 99px; background: var(--border); transition: background 0.3s; }
+  .strength-bar.active { background: var(--blue); }
+  .strength-bar.strong { background: #22c55e; }
+
+  /* Checklist */
+  .check-item { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text-2); }
+  .check-circle {
+    width: 20px; height: 20px; border-radius: 99px; border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    font-size: 10px; color: var(--green); transition: border-color 0.2s, background 0.2s;
+  }
+  .check-circle.ok { border-color: var(--green); background: #dcfce7; }
+
+  /* Debit card */
+  .debit-card {
+    border-radius: 20px;
+    background: linear-gradient(135deg, #1e6fff 0%, #0040d0 60%, #0029a0 100%);
+    padding: 24px 20px 22px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 12px 32px rgba(30,111,255,0.4);
+  }
+  .debit-card::before {
+    content: '';
+    position: absolute;
+    width: 220px; height: 220px; border-radius: 99px;
+    background: rgba(255,255,255,0.06);
+    top: -80px; right: -60px;
+  }
+  .debit-card::after {
+    content: '';
+    position: absolute;
+    width: 160px; height: 160px; border-radius: 99px;
+    background: rgba(255,255,255,0.04);
+    top: -30px; right: -10px;
+  }
+  .card-chip { width: 32px; height: 24px; border-radius: 6px; background: #fbbf24; margin-bottom: 40px; }
+  .card-label { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; opacity: 0.8; }
+  .card-number { font-size: 18px; font-weight: 600; letter-spacing: 1px; margin-top: 36px; }
+  .card-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 8px; }
+  .card-holder-label { font-size: 9px; font-weight: 600; letter-spacing: 1px; opacity: 0.6; margin-bottom: 3px; }
+  .card-holder-name { font-size: 14px; font-weight: 700; }
+  .card-exp-label { font-size: 9px; font-weight: 600; letter-spacing: 1px; opacity: 0.6; margin-bottom: 3px; }
+  .card-exp-val { font-size: 14px; font-weight: 700; }
+  .card-visa { font-size: 24px; font-weight: 800; font-style: italic; opacity: 0.9; }
+
+  /* Confetti dots (success screen) */
+  .confetti-dot {
+    position: absolute; width: 8px; height: 8px; border-radius: 99px;
+    animation: floatDot 2s ease-in-out infinite alternate;
+  }
+  @keyframes floatDot { from { transform: translateY(0); } to { transform: translateY(-6px); } }
+
+  /* Info banner */
+  .info-banner {
+    border-radius: 12px; background: #eff6ff; border: 1px solid #bfdbfe;
+    padding: 14px 16px; display: flex; gap: 10px; align-items: flex-start;
+  }
+  .info-icon {
+    width: 20px; height: 20px; border-radius: 99px; background: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 11px; font-weight: 800; flex-shrink: 0; margin-top: 1px;
+  }
+  .info-text { font-size: 13.5px; color: var(--text-2); line-height: 1.5; }
+
+  /* OTP send toggle */
+  .toggle-row { display: flex; gap: 10px; }
+  .toggle-btn {
+    flex: 1; height: 46px; border-radius: 12px;
+    border: 1.5px solid var(--border); background: var(--bg);
+    font-family: inherit; font-size: 14px; font-weight: 600; color: var(--text-2);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .toggle-btn.active { border-color: var(--blue); background: var(--blue-light); color: var(--blue); }
+
+  /* Footer link text */
+  .footer-link { text-align: center; font-size: 14px; color: var(--text-2); }
+  .footer-link a { color: var(--blue); font-weight: 600; text-decoration: none; cursor: pointer; }
+
+  /* Spacer */
+  .spacer { flex: 1; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <div class="status-icons">
+      <div class="signal-bars">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <div class="battery"><div class="battery-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- ── Screen 1: Welcome ── -->
+  <div class="screen active" id="s-welcome">
+    <div class="content" style="align-items:center; text-align:center; padding-top:60px;">
+      <div class="logo-mark">
+        <span class="m">M</span><span class="p">P</span>
+      </div>
+      <h1 style="margin-top:28px; font-size:34px; font-weight:800; color:var(--text); letter-spacing:-0.5px;">My Prime</h1>
+      <p style="margin-top:8px; font-size:15px; font-weight:600; color:var(--blue);">Prime Bank Digital Banking</p>
+      <p style="margin-top:20px; font-size:15px; color:var(--text-2); line-height:1.6; max-width:280px;">
+        Open your account in minutes. No paperwork, no branch visits — just your phone.
+      </p>
+    </div>
+    <div style="padding:0 20px 28px; display:flex; flex-direction:column; gap:12px;">
+      <button class="btn-primary" onclick="go('s-method')">Get Started</button>
+      <button class="btn-ghost" onclick="go('s-signin')">Already have an account? <span style="color:var(--blue); font-weight:700;">Sign in</span></button>
+      <p style="text-align:center; font-size:12px; color:var(--text-3);">Prime Bank · Since 1995</p>
+    </div>
+  </div>
+
+  <!-- ── Screen 2: Method ── -->
+  <div class="screen" id="s-method">
+    <div class="top-bar">
+      <button class="back-btn" onclick="go('s-welcome')">‹</button>
+      <span class="top-bar-title">Create Account</span>
+    </div>
+    <div class="content" style="padding-top:28px; gap:14px;">
+      <h2 style="font-size:22px; font-weight:800; color:var(--text); margin-bottom:6px;">How would you like to sign up?</h2>
+      <div class="option-card selected" id="opt-existing" onclick="selectMethod('existing')">
+        <div class="option-icon blue">A</div>
+        <div class="option-text">
+          <div class="option-title">Existing Account</div>
+          <div class="option-desc">Use your existing Prime Bank account number</div>
+        </div>
+        <div class="radio-dot checked" id="radio-existing"></div>
+      </div>
+      <div class="option-card" id="opt-nid" onclick="selectMethod('nid')">
+        <div class="option-icon gray">S</div>
+        <div class="option-text">
+          <div class="option-title">National ID (NID)</div>
+          <div class="option-desc">Use your NID + mobile for identity verification</div>
+        </div>
+        <div class="radio-dot" id="radio-nid"></div>
+      </div>
+      <div class="spacer"></div>
+    </div>
+    <div style="padding:0 20px 28px;">
+      <button class="btn-primary" onclick="go('s-details')">Continue</button>
+    </div>
+  </div>
+
+  <!-- ── Screen 3: Details ── -->
+  <div class="screen" id="s-details">
+    <div class="top-bar">
+      <button class="back-btn" onclick="go('s-method')">‹</button>
+      <span class="top-bar-title">Your Details</span>
+    </div>
+    <div class="content" style="padding-top:24px; gap:20px;">
+      <div>
+        <div class="input-label">Account Number</div>
+        <input class="input-field" type="text" value="0010 0012 3456 789" placeholder="Enter account number" />
+      </div>
+      <div>
+        <div class="input-label">Mobile Number</div>
+        <input class="input-field" type="tel" value="+880 1X** ***X96" placeholder="Enter mobile number" />
+      </div>
+      <div>
+        <div class="input-label">Send OTP via</div>
+        <div class="toggle-row">
+          <button class="toggle-btn active" id="otp-sms" onclick="selectOTP('sms')">SMS</button>
+          <button class="toggle-btn" id="otp-wa" onclick="selectOTP('wa')">WhatsApp</button>
+        </div>
+      </div>
+      <div class="spacer"></div>
+    </div>
+    <div style="padding:0 20px 28px;">
+      <button class="btn-primary" onclick="go('s-otp')">Send OTP</button>
+    </div>
+  </div>
+
+  <!-- ── Screen 4: OTP ── -->
+  <div class="screen" id="s-otp">
+    <div class="top-bar">
+      <button class="back-btn" onclick="go('s-details')">‹</button>
+      <span class="top-bar-title">Verify OTP</span>
+    </div>
+    <div class="content" style="padding-top:24px; align-items:center; text-align:center;">
+      <p style="font-size:15px; color:var(--text-2); margin-bottom:4px;">OTP sent to</p>
+      <p style="font-size:15px; font-weight:700; color:var(--text); margin-bottom:28px;">+880 1X** ***X96 (SMS)</p>
+      <div class="otp-grid">
+        <div class="otp-box filled">4</div>
+        <div class="otp-box"></div>
+        <div class="otp-box"></div>
+        <div class="otp-box"></div>
+        <div class="otp-box"></div>
+        <div class="otp-box"></div>
+      </div>
+      <p style="margin-top:20px; font-size:14px; color:var(--text-3);">Resend in <span style="color:var(--blue); font-weight:600;" id="otp-timer">60s</span></p>
+      <div class="spacer"></div>
+    </div>
+    <div style="padding:0 20px 28px;">
+      <button class="btn-primary" onclick="go('s-credentials')">Verify</button>
+    </div>
+  </div>
+
+  <!-- ── Screen 5: Credentials ── -->
+  <div class="screen" id="s-credentials">
+    <div class="top-bar">
+      <button class="back-btn" onclick="go('s-otp')">‹</button>
+      <span class="top-bar-title">Your Credentials</span>
+    </div>
+    <div class="content" style="padding-top:20px; gap:16px;">
+      <div class="info-banner">
+        <div class="info-icon">i</div>
+        <div class="info-text">Save these credentials — you will need them to sign in.</div>
+      </div>
+      <div class="cred-card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <div class="cred-label">User ID</div>
+            <div class="cred-value">mrahim92</div>
+          </div>
+          <button class="copy-btn" onclick="copyText(this, 'mrahim92')">Copy</button>
+        </div>
+      </div>
+      <div class="cred-card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <div class="cred-label">Temporary Password</div>
+            <div class="cred-value">Pr1m3-4729</div>
+          </div>
+          <button class="copy-btn" onclick="copyText(this, 'Pr1m3-4729')">Copy</button>
+        </div>
+      </div>
+      <div class="spacer"></div>
+    </div>
+    <div style="padding:0 20px 28px;">
+      <button class="btn-primary" onclick="go('s-setpass')">Continue to Set Password</button>
+    </div>
+  </div>
+
+  <!-- ── Screen 6: Set Password ── -->
+  <div class="screen" id="s-setpass">
+    <div class="top-bar">
+      <button class="back-btn" onclick="go('s-credentials')">‹</button>
+      <span class="top-bar-title">Set Password</span>
+    </div>
+    <div class="content" style="padding-top:24px; gap:20px;">
+      <div>
+        <div class="input-label">New Password</div>
+        <input class="input-field" type="password" id="pw-input" value="••••••••" placeholder="Enter new password" oninput="checkPw(this)" />
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+          <span style="font-size:13px; color:var(--text-2);">Password strength</span>
+          <span style="font-size:13px; font-weight:700; color:#22c55e;" id="pw-strength-label">Strong</span>
+        </div>
+        <div class="strength-bars">
+          <div class="strength-bar strong" id="sb1"></div>
+          <div class="strength-bar strong" id="sb2"></div>
+          <div class="strength-bar strong" id="sb3"></div>
+          <div class="strength-bar strong" id="sb4"></div>
+        </div>
+      </div>
+      <div>
+        <div class="input-label">Confirm Password</div>
+        <input class="input-field" type="password" value="••••••••" placeholder="Repeat password" />
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px; margin-top:4px;">
+        <div class="check-item"><div class="check-circle ok">✓</div> At least 8 characters</div>
+        <div class="check-item"><div class="check-circle ok">✓</div> At least one uppercase letter</div>
+        <div class="check-item"><div class="check-circle ok">✓</div> At least one number</div>
+        <div class="check-item"><div class="check-circle ok">✓</div> At least one special character</div>
+      </div>
+      <div class="spacer"></div>
+    </div>
+    <div style="padding:0 20px 28px;">
+      <button class="btn-primary" onclick="go('s-success')">Set Password</button>
+    </div>
+  </div>
+
+  <!-- ── Screen 7: Success ── -->
+  <div class="screen" id="s-success">
+    <div class="content" style="padding-top:48px; align-items:center; text-align:center; position:relative;">
+      <!-- confetti dots -->
+      <div class="confetti-dot" style="background:#3b82f6; top:28px; left:40px; animation-delay:0s;"></div>
+      <div class="confetti-dot" style="background:#f59e0b; top:8px; left:90px; animation-delay:0.3s;"></div>
+      <div class="confetti-dot" style="background:#ef4444; top:0px; left:160px; animation-delay:0.6s;"></div>
+      <div class="confetti-dot" style="background:#a855f7; top:13px; left:230px; animation-delay:0.2s;"></div>
+      <div class="confetti-dot" style="background:#22c55e; top:23px; left:290px; animation-delay:0.4s;"></div>
+      <div class="confetti-dot" style="background:#06b6d4; top:3px; left:330px; animation-delay:0.1s;"></div>
+
+      <!-- OK badge -->
+      <div style="width:96px; height:96px; border-radius:99px; border:2.5px solid #22c55e;
+        display:flex; align-items:center; justify-content:center; margin-bottom:24px;
+        background:rgba(34,197,94,0.08);">
+        <span style="font-size:28px; font-weight:800; color:#22c55e;">OK</span>
+      </div>
+
+      <h1 style="font-size:26px; font-weight:800; color:var(--text); letter-spacing:-0.3px;">You're all set, Abdur!</h1>
+      <p style="margin-top:10px; font-size:15px; color:var(--text-2); line-height:1.6;">
+        Your My Prime account is ready.<br>Welcome to Prime Bank digital banking.
+      </p>
+
+      <!-- Debit card -->
+      <div class="debit-card" style="width:100%; margin-top:28px; text-align:left;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="card-chip"></div>
+          <span style="font-size:11px; font-weight:700; letter-spacing:1px; opacity:0.85;">MY PRIME  VISA DEBIT</span>
+        </div>
+        <div class="card-number">3201 46** **77 *596</div>
+        <div class="card-footer">
+          <div>
+            <div class="card-holder-label">CARD HOLDER</div>
+            <div class="card-holder-name">Md. Abdur Rahim</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="card-exp-label">EXP</div>
+            <div class="card-exp-val">05/29</div>
+          </div>
+          <div class="card-visa">VISA</div>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+    </div>
+    <div style="padding:0 20px 28px;">
+      <button class="btn-primary" onclick="go('s-welcome')">Go to Dashboard</button>
+    </div>
+  </div>
+
+  <!-- ── Screen 8: Sign In ── -->
+  <div class="screen" id="s-signin">
+    <div class="content" style="align-items:center; text-align:center; padding-top:60px;">
+      <div class="logo-mark" style="width:48px; height:48px; border-radius:14px;">
+        <span class="m" style="font-size:16px;">M</span><span class="p" style="font-size:16px;">P</span>
+      </div>
+      <h1 style="margin-top:18px; font-size:26px; font-weight:800; color:var(--text);">My Prime</h1>
+      <p style="font-size:20px; font-weight:700; color:var(--text); margin-top:2px;">Welcome back</p>
+    </div>
+    <div class="content" style="padding-top:24px; gap:16px; flex:none;">
+      <div>
+        <div class="input-label">User ID</div>
+        <input class="input-field" type="text" value="mrahim92" placeholder="Enter your user ID" style="text-align:left;" />
+      </div>
+      <div>
+        <div class="input-label">Password</div>
+        <input class="input-field" type="password" value="••••••••" placeholder="Enter your password" />
+        <div style="text-align:right; margin-top:8px;">
+          <a style="font-size:14px; color:var(--blue); font-weight:600; cursor:pointer;">Forgot password?</a>
+        </div>
+      </div>
+    </div>
+    <div style="padding:24px 20px 16px; display:flex; flex-direction:column; gap:12px;">
+      <button class="btn-primary" onclick="go('s-welcome')">Sign In</button>
+      <p class="footer-link">New to My Prime? <a onclick="go('s-method')">Create Account</a></p>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+<script>
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById(id);
+  if (target) { target.classList.add('active'); target.scrollTop = 0; }
+}
+
+function selectMethod(m) {
+  const opts = ['existing','nid'];
+  opts.forEach(o => {
+    document.getElementById('opt-'+o).classList.toggle('selected', o === m);
+    document.getElementById('radio-'+o).classList.toggle('checked', o === m);
+    document.getElementById('opt-'+o).querySelector('.option-icon').className = 'option-icon ' + (o === m ? 'blue' : 'gray');
+  });
+}
+
+function selectOTP(mode) {
+  document.getElementById('otp-sms').classList.toggle('active', mode === 'sms');
+  document.getElementById('otp-wa').classList.toggle('active', mode === 'wa');
+}
+
+function copyText(btn, text) {
+  navigator.clipboard.writeText(text).catch(() => {});
+  btn.textContent = 'Copied!';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+}
+
+// OTP countdown
+let countdown;
+function startOTPTimer() {
+  clearInterval(countdown);
+  let t = 60;
+  const el = document.getElementById('otp-timer');
+  countdown = setInterval(() => {
+    t--;
+    if (el) el.textContent = t > 0 ? t+'s' : 'Resend';
+    if (t <= 0) clearInterval(countdown);
+  }, 1000);
+}
+document.addEventListener('DOMContentLoaded', startOTPTimer);
+
+function checkPw(input) {
+  const v = input.value;
+  const bars = [document.getElementById('sb1'), document.getElementById('sb2'),
+                document.getElementById('sb3'), document.getElementById('sb4')];
+  const label = document.getElementById('pw-strength-label');
+  const len = v.length;
+  const score = (len >= 8 ? 1 : 0) + (/[A-Z]/.test(v) ? 1 : 0) + (/[0-9]/.test(v) ? 1 : 0) + (/[^a-zA-Z0-9]/.test(v) ? 1 : 0);
+  const colors = ['#ef4444','#f97316','#eab308','#22c55e'];
+  const labels = ['Weak','Fair','Good','Strong'];
+  bars.forEach((b, i) => { b.style.background = i < score ? colors[score-1] : 'var(--border)'; });
+  label.textContent = score > 0 ? labels[score-1] : '';
+  label.style.color = score > 0 ? colors[score-1] : 'var(--text-3)';
+}
+</script>
+</body>
+</html>

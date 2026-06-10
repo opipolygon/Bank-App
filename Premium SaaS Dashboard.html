@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Premium SaaS Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0520;
+    --surface: rgba(255,255,255,0.05);
+    --surface-2: rgba(255,255,255,0.08);
+    --border: rgba(255,255,255,0.08);
+    --text: #f0eeff;
+    --text-2: rgba(240,238,255,0.65);
+    --text-3: rgba(240,238,255,0.4);
+    --purple: #a855f7;
+    --purple-light: rgba(168,85,247,0.25);
+    --green: #4ade80;
+    --green-bg: rgba(74,222,128,0.15);
+    --red: #f87171;
+    --red-bg: rgba(248,113,113,0.15);
+    --accent: #7c3aed;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #1a1030;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Phone shell */
+  .phone {
+    width: 430px;
+    height: 932px;
+    background: var(--bg);
+    border-radius: 48px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Background glows */
+  .phone::before {
+    content: '';
+    position: absolute;
+    width: 560px; height: 480px; border-radius: 99px;
+    background: radial-gradient(ellipse, rgba(139,92,246,0.35), transparent 65%);
+    top: -160px; left: -100px;
+    pointer-events: none; z-index: 0;
+  }
+  .phone::after {
+    content: '';
+    position: absolute;
+    width: 380px; height: 340px; border-radius: 99px;
+    background: radial-gradient(ellipse, rgba(99,58,200,0.28), transparent 65%);
+    bottom: 580px; right: 140px;
+    pointer-events: none; z-index: 0;
+  }
+
+  /* Dot grid background */
+  .dot-grid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px);
+    background-size: 132px 66px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    padding-bottom: 100px;
+  }
+  .content::-webkit-scrollbar { display: none; }
+
+  /* Status bar */
+  .status-bar {
+    position: relative; z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 24px 0;
+    flex-shrink: 0;
+  }
+  .status-time { font-size: 15px; font-weight: 600; color: var(--text); }
+  .status-icons { display: flex; align-items: center; gap: 6px; }
+  .signal-bars { display: flex; align-items: flex-end; gap: 2px; }
+  .signal-bars span { width: 3.5px; border-radius: 1px; background: var(--text); }
+  .signal-bars span:nth-child(1) { height: 4px; }
+  .signal-bars span:nth-child(2) { height: 7px; }
+  .signal-bars span:nth-child(3) { height: 10px; }
+  .signal-bars span:nth-child(4) { height: 13px; }
+  .battery {
+    width: 26px; height: 13px; border: 1.5px solid rgba(255,255,255,0.5); border-radius: 3px;
+    position: relative; display: flex; align-items: center; padding: 2px;
+  }
+  .battery::after {
+    content: ''; position: absolute; right: -4px; top: 50%; transform: translateY(-50%);
+    width: 2px; height: 6px; background: rgba(255,255,255,0.5); border-radius: 0 1px 1px 0;
+  }
+  .battery-fill { height: 100%; width: 75%; background: #fff; border-radius: 1px; }
+  .notif-dot {
+    position: absolute; top: 14px; right: 14px; width: 14px; height: 14px; border-radius: 99px;
+    background: #ef4444; border: 2px solid var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 800; color: #fff;
+  }
+
+  /* Header */
+  .header {
+    position: relative; z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 24px 0;
+    flex-shrink: 0;
+  }
+  .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
+    color: var(--purple); text-transform: uppercase;
+  }
+  .avatar {
+    width: 40px; height: 40px; border-radius: 99px;
+    background: linear-gradient(145deg, #7c3aed, #4f1d96);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 800; color: #fff;
+    position: relative; cursor: pointer;
+  }
+
+  /* Greeting */
+  .greeting { position: relative; z-index: 2; padding: 10px 24px 0; flex-shrink: 0; }
+  .greeting-sub { font-size: 16px; color: var(--text-2); }
+  .greeting-name {
+    font-size: 34px; font-weight: 800; color: var(--text);
+    letter-spacing: -0.8px; line-height: 1.1; margin-top: 4px;
+  }
+  .sparkle { color: var(--purple); font-style: normal; }
+
+  /* Hero card */
+  .hero-card {
+    margin: 20px 20px 0;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(124,58,237,0.6), rgba(79,29,150,0.7));
+    border: 1px solid rgba(168,85,247,0.3);
+    padding: 22px 24px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-card::before {
+    content: '';
+    position: absolute; right: -30px; top: -50px;
+    width: 160px; height: 160px; border-radius: 99px;
+    background: radial-gradient(ellipse, rgba(168,85,247,0.45), transparent 65%);
+  }
+  .hero-card::after {
+    content: '';
+    position: absolute; right: -10px; top: -30px;
+    width: 110px; height: 110px; border-radius: 99px;
+    background: radial-gradient(ellipse, rgba(196,130,255,0.25), transparent 65%);
+  }
+  .hero-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    color: rgba(240,238,255,0.6); text-transform: uppercase; margin-bottom: 8px;
+  }
+  .hero-amount {
+    font-size: 42px; font-weight: 800; color: #fff;
+    letter-spacing: -1.5px; line-height: 1; position: relative; z-index: 1;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(74,222,128,0.2); border: 1px solid rgba(74,222,128,0.3);
+    padding: 4px 10px; border-radius: 8px; margin-top: 14px;
+  }
+  .badge-arrow { color: var(--green); font-size: 11px; font-weight: 800; }
+  .badge-text { font-size: 11.5px; font-weight: 700; color: var(--green); }
+  .hero-sub { margin-top: 10px; font-size: 12px; color: rgba(240,238,255,0.5); }
+
+  /* Mini chart in hero */
+  .mini-chart { position: absolute; right: 24px; bottom: 20px; display: flex; align-items: flex-end; gap: 4px; }
+  .mini-bar {
+    width: 11px; border-radius: 3px 3px 0 0;
+    background: rgba(255,255,255,0.15);
+  }
+  .mini-bar.highlight { background: rgba(168,85,247,0.8); }
+  .mini-dot {
+    position: absolute; right: 0; bottom: 100%;
+    width: 8px; height: 8px; border-radius: 99px;
+    background: var(--purple); border: 2px solid rgba(255,255,255,0.8);
+    transform: translate(50%, 50%);
+  }
+
+  /* Stats row */
+  .stats-row {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    margin: 18px 20px 0;
+  }
+  .stat-card {
+    border-radius: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 14px 14px 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-top-bar {
+    position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 16px 16px 0 0;
+  }
+  .stat-icon { font-size: 16px; margin-bottom: 8px; }
+  .stat-value { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+  .stat-label { font-size: 10.5px; color: var(--text-3); margin-top: 3px; }
+  .stat-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    border-radius: 6px; padding: 2px 7px; margin-top: 8px;
+    font-size: 10px; font-weight: 700;
+  }
+  .stat-badge.up { background: var(--green-bg); color: var(--green); }
+  .stat-badge.down { background: var(--red-bg); color: var(--red); }
+
+  /* Chart section */
+  .chart-card {
+    margin: 18px 20px 0;
+    border-radius: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px 20px 18px;
+  }
+  .chart-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+  .chart-title { font-size: 16px; font-weight: 700; color: var(--text); }
+  .chart-sub { font-size: 12px; color: var(--text-3); margin-top: 3px; }
+  .time-tabs { display: flex; gap: 2px; }
+  .time-tab {
+    padding: 5px 9px; border-radius: 8px; font-size: 11px; font-weight: 600;
+    color: var(--text-3); cursor: pointer; transition: all 0.15s;
+    background: none; border: none; font-family: inherit;
+  }
+  .time-tab.active {
+    background: rgba(124,58,237,0.3); color: var(--purple);
+    border: 1px solid rgba(124,58,237,0.4);
+  }
+
+  /* Bar chart */
+  .bar-chart { display: flex; align-items: flex-end; gap: 0; height: 100px; }
+  .bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .bar-wrapper { width: 100%; display: flex; justify-content: center; align-items: flex-end; height: 88px; position: relative; }
+  .bar-bg { width: 30px; border-radius: 6px 6px 0 0; background: var(--surface-2); position: relative; }
+  .bar-fill { position: absolute; bottom: 0; left: 0; right: 0; border-radius: 6px 6px 0 0; background: rgba(124,58,237,0.45); transition: height 0.6s ease; }
+  .bar-fill.active { background: linear-gradient(180deg, #a855f7, #7c3aed); }
+  .bar-label { margin-top: 8px; font-size: 10.5px; color: var(--text-3); font-weight: 500; }
+  .bar-tooltip {
+    position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+    background: rgba(124,58,237,0.9); color: #fff; font-size: 10px; font-weight: 700;
+    padding: 4px 8px; border-radius: 7px; white-space: nowrap; pointer-events: none;
+  }
+  .grid-line {
+    position: absolute; left: 0; right: 0; height: 1px;
+    background: var(--border); pointer-events: none;
+  }
+
+  /* Transactions */
+  .txn-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 24px 14px;
+  }
+  .txn-title { font-size: 16px; font-weight: 700; color: var(--text); }
+  .see-all { font-size: 14px; font-weight: 600; color: var(--purple); cursor: pointer; }
+
+  .txn-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .txn-item:last-child { border-bottom: none; }
+  .txn-item:hover { background: var(--surface); }
+  .txn-icon {
+    width: 44px; height: 44px; border-radius: 14px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .txn-name { font-size: 15px; font-weight: 600; color: var(--text); }
+  .txn-type { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+  .txn-amount { font-size: 16px; font-weight: 700; margin-left: auto; }
+  .txn-amount.pos { color: var(--green); }
+  .txn-amount.neg { color: var(--red); }
+  .txn-dot { width: 8px; height: 8px; border-radius: 99px; flex-shrink: 0; }
+  .txn-dot.pos { background: var(--green); }
+  .txn-dot.neg { background: var(--red); }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position: absolute; bottom: 0; left: 0; right: 0; z-index: 10;
+    border-top: 1px solid var(--border);
+    background: rgba(14,5,32,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 10px 0 32px;
+  }
+  .nav-items { display: flex; justify-content: space-around; }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 6px 12px; cursor: pointer; border-radius: 14px;
+    transition: background 0.15s; position: relative;
+  }
+  .nav-item.active { background: var(--purple-light); }
+  .nav-icon { font-size: 22px; }
+  .nav-label { font-size: 11px; font-weight: 600; color: var(--text-3); }
+  .nav-item.active .nav-label { color: var(--purple); }
+  .nav-dot {
+    position: absolute; bottom: -8px;
+    width: 4px; height: 4px; border-radius: 99px; background: var(--purple);
+  }
+  .home-indicator {
+    width: 120px; height: 4px; border-radius: 99px;
+    background: rgba(255,255,255,0.2);
+    margin: 10px auto 0;
+  }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="dot-grid"></div>
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <div class="status-icons">
+      <div class="signal-bars">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="none" style="margin-right:2px">
+        <rect x="0" y="4" width="4" height="8" rx="1" fill="rgba(255,255,255,0.4)"/>
+        <rect x="5.5" y="2" width="4" height="10" rx="1" fill="rgba(255,255,255,0.7)"/>
+        <rect x="11" y="0" width="4" height="12" rx="1" fill="#fff"/>
+      </svg>
+      <div class="battery"><div class="battery-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <span class="section-label">Dashboard</span>
+    <div style="position:relative;">
+      <div class="avatar">AR</div>
+      <div class="notif-dot">3</div>
+    </div>
+  </div>
+
+  <!-- Greeting -->
+  <div class="greeting">
+    <div class="greeting-sub">Good morning,</div>
+    <div class="greeting-name">Alex Rivera <span class="sparkle">✦</span></div>
+  </div>
+
+  <!-- Scrollable content -->
+  <div class="content">
+
+    <!-- Hero card -->
+    <div class="hero-card">
+      <div class="hero-label">Total Revenue</div>
+      <div class="hero-amount">$284,921</div>
+      <div class="hero-badge">
+        <span class="badge-arrow">▲</span>
+        <span class="badge-text">12.4% MoM</span>
+      </div>
+      <div class="hero-sub">vs $253,802 last month</div>
+      <div class="mini-chart">
+        <div style="position:relative;">
+          <div style="display:flex; align-items:flex-end; gap:4px;">
+            <div class="mini-bar" style="height:34px;"></div>
+            <div class="mini-bar" style="height:26px;"></div>
+            <div class="mini-bar" style="height:38px;"></div>
+            <div class="mini-bar" style="height:22px;"></div>
+            <div class="mini-bar" style="height:28px;"></div>
+            <div class="mini-bar" style="height:20px;"></div>
+            <div class="mini-bar highlight" style="height:48px; position:relative;">
+              <div class="mini-dot"></div>
+            </div>
+            <div class="mini-bar" style="height:28px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-top-bar" style="background:linear-gradient(90deg,#7c3aed,#a855f7);"></div>
+        <div class="stat-icon">👥</div>
+        <div class="stat-value">48.2K</div>
+        <div class="stat-label">Users</div>
+        <div class="stat-badge up">↑ 8.1%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top-bar" style="background:linear-gradient(90deg,#0ea5e9,#38bdf8);"></div>
+        <div class="stat-icon">💰</div>
+        <div class="stat-value">$12.4K</div>
+        <div class="stat-label">MRR</div>
+        <div class="stat-badge up">↑ 5.3%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top-bar" style="background:linear-gradient(90deg,#dc2626,#f87171);"></div>
+        <div class="stat-icon">📉</div>
+        <div class="stat-value">1.8%</div>
+        <div class="stat-label">Churn</div>
+        <div class="stat-badge down">↓ 0.3%</div>
+      </div>
+    </div>
+
+    <!-- Revenue chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Revenue Trend</div>
+          <div class="chart-sub">6-month overview</div>
+        </div>
+        <div class="time-tabs">
+          <button class="time-tab">1W</button>
+          <button class="time-tab">1M</button>
+          <button class="time-tab active">6M</button>
+          <button class="time-tab">1Y</button>
+        </div>
+      </div>
+
+      <!-- Bar chart -->
+      <div style="position:relative; height:100px;">
+        <div class="grid-line" style="top:0;"></div>
+        <div class="grid-line" style="top:29px;"></div>
+        <div class="grid-line" style="top:59px;"></div>
+        <div class="grid-line" style="top:88px;"></div>
+        <div class="bar-chart">
+          <div class="bar-group">
+            <div class="bar-wrapper">
+              <div class="bar-bg" style="height:88px;">
+                <div class="bar-fill" style="height:42%;"></div>
+              </div>
+            </div>
+            <div class="bar-label">Jan</div>
+          </div>
+          <div class="bar-group">
+            <div class="bar-wrapper">
+              <div class="bar-bg" style="height:88px;">
+                <div class="bar-fill" style="height:58%;"></div>
+              </div>
+            </div>
+            <div class="bar-label">Feb</div>
+          </div>
+          <div class="bar-group">
+            <div class="bar-wrapper">
+              <div class="bar-bg" style="height:88px;">
+                <div class="bar-fill" style="height:35%;"></div>
+              </div>
+            </div>
+            <div class="bar-label">Mar</div>
+          </div>
+          <div class="bar-group">
+            <div class="bar-wrapper">
+              <div class="bar-bg" style="height:88px;">
+                <div class="bar-fill" style="height:75%;"></div>
+              </div>
+            </div>
+            <div class="bar-label">Apr</div>
+          </div>
+          <div class="bar-group">
+            <div class="bar-wrapper">
+              <div class="bar-bg" style="height:88px;">
+                <div class="bar-fill" style="height:62%;"></div>
+              </div>
+            </div>
+            <div class="bar-label">May</div>
+          </div>
+          <div class="bar-group">
+            <div class="bar-wrapper" style="position:relative;">
+              <div class="bar-bg" style="height:88px;">
+                <div class="bar-fill active" style="height:100%;"></div>
+              </div>
+              <div class="bar-tooltip">$94K</div>
+            </div>
+            <div class="bar-label" style="color:var(--purple); font-weight:700;">Jun</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transactions -->
+    <div class="txn-header">
+      <span class="txn-title">Recent Transactions</span>
+      <span class="see-all">See all</span>
+    </div>
+
+    <div class="txn-item">
+      <div class="txn-icon">💼</div>
+      <div>
+        <div class="txn-name">Acme Corporation</div>
+        <div class="txn-type">Enterprise</div>
+      </div>
+      <div class="txn-amount pos">+$4,800</div>
+      <div class="txn-dot pos"></div>
+    </div>
+
+    <div class="txn-item">
+      <div class="txn-icon">🎨</div>
+      <div>
+        <div class="txn-name">Nova Design Co.</div>
+        <div class="txn-type">Pro Annual</div>
+      </div>
+      <div class="txn-amount pos">+$1,920</div>
+      <div class="txn-dot pos"></div>
+    </div>
+
+    <div class="txn-item">
+      <div class="txn-icon">↩️</div>
+      <div>
+        <div class="txn-name">StartupXYZ</div>
+        <div class="txn-type">Refund</div>
+      </div>
+      <div class="txn-amount neg">-$99</div>
+      <div class="txn-dot neg"></div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <div class="nav-items">
+      <div class="nav-item active" onclick="setTab(this)">
+        <span class="nav-icon">⊞</span>
+        <span class="nav-label">Home</span>
+        <div class="nav-dot"></div>
+      </div>
+      <div class="nav-item" onclick="setTab(this)">
+        <span class="nav-icon">📈</span>
+        <span class="nav-label">Stats</span>
+      </div>
+      <div class="nav-item" onclick="setTab(this)">
+        <span class="nav-icon">💬</span>
+        <span class="nav-label">Chat</span>
+      </div>
+      <div class="nav-item" onclick="setTab(this)">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Settings</span>
+      </div>
+    </div>
+    <div class="home-indicator"></div>
+  </div>
+
+</div>
+
+<script>
+function setTab(el) {
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.remove('active');
+    const dot = n.querySelector('.nav-dot');
+    if (dot) dot.remove();
+  });
+  el.classList.add('active');
+  if (!el.querySelector('.nav-dot')) {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot';
+    el.appendChild(dot);
+  }
+}
+
+document.querySelectorAll('.time-tab').forEach(t => {
+  t.addEventListener('click', function() {
+    document.querySelectorAll('.time-tab').forEach(x => x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
